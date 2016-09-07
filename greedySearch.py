@@ -87,8 +87,8 @@ def printPath(start, path):
 
 
 def runOp(value, operation):
-    altValue = int(operation[2:])
-    op = operation[:1]
+    altValue = int(operation[1:])
+    op = operation[0]
 
     if op == '+':
         newValue = value + altValue
