@@ -70,7 +70,7 @@ def greedySearch(start, goal, maxTime, operations):
 
         path.reverse()
         printPath(start,path)
-        if start != goal:
+        if path[len(path)-1].node != goal:
             print 'Goal not obtained'
 
         # final printing
