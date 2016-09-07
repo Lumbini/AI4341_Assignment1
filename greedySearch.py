@@ -22,8 +22,10 @@ def greedySearch(start, goal, maxTime, operations):
 
     # add initial node to frontier
     frontier = Queue.PriorityQueue()
+    nodesExplored = 1
     if start == goal:
-        return
+        currentTime = time.time()
+        print 'The starting number is the goal'
 
     else:
         # add children to frontier
@@ -36,7 +38,6 @@ def greedySearch(start, goal, maxTime, operations):
         currentTime = time.time()
 
         current = start
-        nodesExplored = 1
 
         while (currentTime - startTime) < maxTime:
             current = frontier.get(
@@ -73,9 +74,9 @@ def greedySearch(start, goal, maxTime, operations):
         if path[len(path)-1].node != goal:
             print 'Goal not obtained'
 
-        # final printing
-        print 'Search took ' + str(currentTime - startTime) + ' seconds'
-        print 'Explored ' + str(nodesExplored) + ' nodes'
+    # final printing
+    print 'Search took ' + str(currentTime - startTime) + ' seconds'
+    print 'Explored ' + str(nodesExplored) + ' nodes'
 
 
 def printPath(start, path):
@@ -112,4 +113,4 @@ def runOp(value, operation):
 if __name__ == '__main__':
     # val = runOp(8,'/ 3')
     # print val
-    greedySearch(5, -8, 1, ['^ 2','/ 5','+ 2','- 10','* 9'])
+    greedySearch(5, 99, 1, ['^ 2','/ 5','+ 2','- 10','* 9'])
