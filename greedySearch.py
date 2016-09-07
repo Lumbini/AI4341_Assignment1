@@ -30,22 +30,19 @@ def greedySearch(start, goal, maxTime, operations):
         for next in operations:
             newValue = runOp(start, next)
             priority = abs(newValue - goal)
-            print 'Priority = ' + str(priority)
             newNodeOp = NodeOp(newValue, next, start)  # first parent is integer
-            frontier.put(priority,newNodeOp)
+            frontier.put((priority,newNodeOp))
 
         currentTime = time.time()
 
         current = start
         nodesExplored = 1
 
-        while not frontier.empty():
-            node = frontier.get()
-            print node
-
         while (currentTime - startTime) < maxTime:
-            current = frontier.get()
-            print 'Node = ' + str(current.node) + ' Past operator was ' + str(current.op)
+            current = frontier.get(
+
+            )[1]
+            # print 'Node = ' + str(current.node) + ' Past operator was ' + str(current.op)
             nodesExplored += 1
 
             # check if current is goal
@@ -57,9 +54,8 @@ def greedySearch(start, goal, maxTime, operations):
             for next in operations:
                 newValue = runOp(current.node, next)
                 priority = abs(newValue - goal)
-                print 'Priority = ' + str(priority)
                 newNodeOp = NodeOp(newValue, next, current)  # all other parents are NodeOps
-                frontier.put(priority,newNodeOp)
+                frontier.put((priority,newNodeOp))
 
             currentTime = time.time()
 
@@ -67,16 +63,27 @@ def greedySearch(start, goal, maxTime, operations):
         path = []
         while True:
             path.append(current)
-            if current.parent is NodeOp:  # type check. Not sure if this works
+            if isinstance(current.parent, NodeOp):  # type check. Not sure if this works
                 current = current.parent
             else:
                 break
 
         path.reverse()
+        printPath(start,path)
+        if start != goal:
+            print 'Goal not obtained'
 
         # final printing
-        print currentTime - startTime
+        print 'Search took ' + str(currentTime - startTime) + ' seconds'
         print 'Explored ' + str(nodesExplored) + ' nodes'
+
+
+def printPath(start, path):
+    print str(start) + ' ' + path[1].op + ' = ' + str(path[1].node)
+
+    for x in range(2,len(path)):
+        print str(path[x-1].node) + ' ' + path[x].op + ' = ' + str(path[x].node)
+
 
 
 def runOp(value, operation):
@@ -105,4 +112,4 @@ def runOp(value, operation):
 if __name__ == '__main__':
     # val = runOp(8,'/ 3')
     # print val
-    greedySearch(1, 2, 5, ['^ 2','/ 5','+ 2','- 10','* 9'])
+    greedySearch(5, -8, 1, ['^ 2','/ 5','+ 2','- 10','* 9'])
