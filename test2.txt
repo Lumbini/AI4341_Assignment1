@@ -1,4 +1,4 @@
-iterative
+greedy
 14
 796
 2.5
