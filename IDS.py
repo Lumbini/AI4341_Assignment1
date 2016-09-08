@@ -17,9 +17,10 @@ import math
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test5.txt'
+    print 'Please enter Filename'
+    
 print 'Opening ', fileName
-config = open('test5.txt', 'r', 0)
+config = open(fileName, 'r', 0)
 info = config.readlines()
 config.close()
 
@@ -102,9 +103,12 @@ def IDDFS(start, goal, timeLimit, opList):
         for combinations in graphSearch:
             
             currentTime = time.time()
-            #Go through the list of Combinations
+            #Go through the list of Combination
             for nodes in combinations:
+                
                 check = compute(currNode, graphList[nodes], depth, nodesExpanded)
+                if check is None:
+                    break
                 nodesExpanded += 1
                 
                 eqn = [str(currNode) + ' '+ str(graphList[nodes] + ' = ' + str(check))]
@@ -145,16 +149,17 @@ def compute(currNode, nextNode, depth, nodesExpanded):
     #if operator is power use the math.pow library
     # print str(number) + ' ' +  str(opSet[1])
     # print number
+    
     if opSet[0] == '^':
         try:
             result = long(math.pow(long(number), int(opSet[1])))
             return result
             
         except OverflowError:
-            print 'Memory limit reached, cannot continue the Iterative Deepening search'
+            print 'Memory limit reached,  Trying next possible operation'
             print 'Nodes Expanded: ' + str(nodesExpanded)
             print 'Depth: ' + str(depth)
-            sys.exit(0)
+            pass
 
     #For +, -, *, / use the eval() function
     else:
