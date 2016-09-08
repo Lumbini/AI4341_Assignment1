@@ -9,13 +9,40 @@
 #######################################################################################################################
 
 #!/usr/bin/python
-
-import math
 import time
+import sys
+import math
 
-depth = 1
-#This function assumes that the graph is a list of list of permutations
-#Test:
+# Read from file
+if len(sys.argv) > 1:
+    fileName = str(sys.argv[1])
+else:
+    fileName = 'test5.txt'
+print 'Opening ', fileName
+config = open('test5.txt', 'r', 0)
+info = config.readlines()
+config.close()
+
+
+# Assign file contents to appropriate variables
+searchMode = info[0]
+startVal = int(info[1])
+goalVal = int(info[2])
+timeAlloc = float(info[3])
+legalOps = info[4:]
+depth = 0
+print 'Search Mode:', searchMode
+print 'Starting Value: ', startVal
+print 'Goal Value: ', goalVal
+print 'Time Allocated: ', timeAlloc, 'seconds'
+print 'Legal Operations: ', legalOps
+
+# Variables for output of results
+isError = False
+numStepsRequired = 0
+nodesExpanded = 0
+maxSearchDepth = 0
+
 def combinations_with_replacement(iterable, r):
     # combinations('ABC', 2) --> AA AB AC BB BC CC
     pool = tuple(iterable)
@@ -33,12 +60,18 @@ def combinations_with_replacement(iterable, r):
         indices[i:] = [indices[i] + 1] * (r - i)
         yield tuple(pool[i] for i in indices)
 
-def IDDFS(start, goal, timeLimit):
+def IDDFS(start, goal, timeLimit, opList):
     # Start Timer
+    graphList = []
+
+    for operations in opList:
+        graphList.append(operations.rstrip('\n'))
+        
     startTime = time.time()
 
     depth = 1
-    graphList = ['+ 3', '/ 2' ,'- 1','* 5', '^ 2']
+    #number of nodes 
+    nodesExpanded = 0
 
     # Boolean to check if goal has been reached
     success = 0
@@ -50,7 +83,9 @@ def IDDFS(start, goal, timeLimit):
     # Run while loop till goal found,
     while (currentTime-startTime) < timeLimit:
         
-        graphSearch = combinations_with_replacement(range(5), depth)
+        graphSearch = combinations_with_replacement(range(len(legalOps)), depth)
+        # for x in graphSearch:
+        #     print x
 
         # Restart Path
         path = []
@@ -60,47 +95,104 @@ def IDDFS(start, goal, timeLimit):
         # check if the node is the goal
         if currNode == goal:
             success = 1
+            print 'Start = Goal. Haha That was easy.'
         
+
+        #Iterate  through the list of list of combinations
         for combinations in graphSearch:
+            
             currentTime = time.time()
+            #Go through the list of Combinations
             for nodes in combinations:
-                check = compute(currNode, graphList[nodes])
-                eqn = [str(currNode) + str(graphList[nodes] + '=' + str(check))]
+                check = compute(currNode, graphList[nodes], depth, nodesExpanded)
+                nodesExpanded += 1
+                
+                eqn = [str(currNode) + ' '+ str(graphList[nodes] + ' = ' + str(check))]
                 path.extend(eqn)
                 if check == goal:
                     success = 1
                     timeTaken = currentTime - startTime
-                    print 'Iterative Deepening Search completed in ' + str(format(timeTaken, '.4f'))
-                    print 'The equations required to reach goal are: '
+                
+                    print 'Iterative Deepening Search completed in ' + str(timeTaken)
+                    print 'Depth: ' + str(depth)
+                    print 'Nodes Expanded: ' + str(nodesExpanded)
+                    print 'Number of equations to reach goal: ' + str(len(path))
+                    print 'The equations required to reach goal are: ' 
                     return path
                     break
-                else: currNode = check
+                currNode = check
+        
+            
         depth += 1
         currentTime = time.time()
-    
-
-    
-def compute(currNode, nextNode):
+        if depth >= 500 or (currentTime - startTime) > timeAlloc:
+            print 'Could not reach goal in given time or depth limit reached'
+            print 'Depth: ' + str(depth)
+            break
+        
+def compute(currNode, nextNode, depth, nodesExpanded):
     #create an array of chars
     opSet = nextNode.split(' ')
     # print opSet
 
     if isinstance(currNode, str):
         currSet = currNode.split(' ')
-        number = currSet[1]
+        number = long(currSet[1])
     else:
-        number = currNode
+        number = long(currNode)
+        
 
     #if operator is power use the math.pow library
     # print str(number) + ' ' +  str(opSet[1])
+    # print number
     if opSet[0] == '^':
-        return math.pow(int(number), int(opSet[1]))
+        try:
+            result = long(math.pow(long(number), int(opSet[1])))
+            return result
+            
+        except OverflowError:
+            print 'Memory limit reached, cannot continue the Iterative Deepening search'
+            print 'Nodes Expanded: ' + str(nodesExpanded)
+            print 'Depth: ' + str(depth)
+            sys.exit(0)
 
     #For +, -, *, / use the eval() function
     else:
-        magic = str(currNode) + nextNode
-        return eval(magic)
+        number = str(currNode) + nextNode
+        try:
+            return eval(number)
+        except TypeError:
+            print 'Iterative Deepening Search terminated due to Memory Limitations'
+            sys.exit(0)
 
+def runOp(value, operation):
+    altValue = int(operation[1:])
+    op = operation[0]
+
+    if op == '+':
+        newValue = value + altValue
+        return newValue
+    elif op == '-':
+        newValue = value - altValue
+        return newValue
+    elif op == '/':
+        newValue = value / altValue
+        return newValue
+    elif op == '*':
+        newValue = value * altValue
+        return newValue
+    elif op == '^':
+        newValue = value ** altValue
+        return newValue
+    else:  # will cause error if invalid operation
+        return
 
 if __name__ == "__main__":
-    print IDDFS(4, 11, 2.5)
+    #print IDDFS(startVal, goalVal, timeAlloc, legalOps)
+
+    #if searchMode == 'iterative':
+    print IDDFS(startVal, goalVal, timeAlloc, legalOps)
+    # elif searchMode is 'greedy':
+    #     print 'Greedy'
+    # else: 
+    #     print 'Search Type not available'
