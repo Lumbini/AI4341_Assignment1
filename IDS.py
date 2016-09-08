@@ -170,28 +170,6 @@ def compute(currNode, nextNode, depth, nodesExpanded):
             print 'Iterative Deepening Search terminated due to Memory Limitations'
             sys.exit(0)
 
-def runOp(value, operation):
-    altValue = int(operation[1:])
-    op = operation[0]
-
-    if op == '+':
-        newValue = value + altValue
-        return newValue
-    elif op == '-':
-        newValue = value - altValue
-        return newValue
-    elif op == '/':
-        newValue = value / altValue
-        return newValue
-    elif op == '*':
-        newValue = value * altValue
-        return newValue
-    elif op == '^':
-        newValue = value ** altValue
-        return newValue
-    else:  # will cause error if invalid operation
-        return
-
 if __name__ == "__main__":
     #print IDDFS(startVal, goalVal, timeAlloc, legalOps)
 
