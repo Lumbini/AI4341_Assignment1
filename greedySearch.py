@@ -30,9 +30,9 @@ def greedySearch(start, goal, maxTime, operations):
     else:
         # add children to frontier
         for next in operations:
-            newValue = runOp(start, next)
+            newValue = runOp(start, next.rstrip('\n'))
             priority = abs(newValue - goal)
-            newNodeOp = NodeOp(newValue, next, start)  # first parent is integer
+            newNodeOp = NodeOp(newValue, next.rstrip('\n'), start)  # first parent is integer
             frontier.put((priority,newNodeOp))
 
         currentTime = time.time()
@@ -40,9 +40,7 @@ def greedySearch(start, goal, maxTime, operations):
         current = start
 
         while (currentTime - startTime) < maxTime:
-            current = frontier.get(
-
-            )[1]
+            current = frontier.get()[1]
             # print 'Node = ' + str(current.node) + ' Past operator was ' + str(current.op)
             nodesExplored += 1
 
@@ -53,9 +51,9 @@ def greedySearch(start, goal, maxTime, operations):
 
             # add children to frontier
             for next in operations:
-                newValue = runOp(current.node, next)
+                newValue = runOp(current.node, next.rstrip('\n'))
                 priority = abs(newValue - goal)
-                newNodeOp = NodeOp(newValue, next, current)  # all other parents are NodeOps
+                newNodeOp = NodeOp(newValue, next.rstrip('\n'), current)  # all other parents are NodeOps
                 frontier.put((priority,newNodeOp))
 
             currentTime = time.time()
@@ -82,7 +80,7 @@ def greedySearch(start, goal, maxTime, operations):
 def printPath(start, path):
     print str(start) + ' ' + path[1].op + ' = ' + str(path[1].node)
 
-    for x in range(2,len(path)):
+    for x in range(1,len(path)):
         print str(path[x-1].node) + ' ' + path[x].op + ' = ' + str(path[x].node)
 
 
