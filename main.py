@@ -7,7 +7,7 @@ import Queue
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test8.txt'
+    fileName = 'test7.txt'
 print 'Opening ', fileName
 config = open(fileName, 'r', 0)
 info = config.readlines()
@@ -115,8 +115,11 @@ def greedySearch(start, goal, maxTime, operations):
         printPath(start,path)
         if path[len(path)-1].node != goal:
             print 'Goal not obtained'
+        else:
+            print 'Goal obtained!'
 
     # final printing
+    print 'Steps Taken: ' + str(len(path))
     print 'Search took ' + str(currentTime - startTime) + ' seconds'
     print 'Explored ' + str(nodesExplored) + ' nodes'
 
