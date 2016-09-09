@@ -170,12 +170,12 @@ def compute(currNode, nextNode, depth, nodesExpanded):
             print 'Iterative Deepening Search terminated due to Memory Limitations'
             sys.exit(0)
 
-if __name__ == "__main__":
-    #print IDDFS(startVal, goalVal, timeAlloc, legalOps)
+# if __name__ == "__main__":
+#     #print IDDFS(startVal, goalVal, timeAlloc, legalOps)
 
-    #if searchMode == 'iterative':
-    print IDDFS(startVal, goalVal, timeAlloc, legalOps)
-    # elif searchMode is 'greedy':
-    #     print 'Greedy'
-    # else: 
+#     #if searchMode == 'iterative':
+#     print IDDFS(startVal, goalVal, timeAlloc, legalOps)
+#     # elif searchMode is 'greedy':
+#     #     print 'Greedy'
+#     # else: 
     #     print 'Search Type not available'

@@ -1,6 +1,6 @@
-greedy
+iterative
 2
-5849
+100
 2.5
 + 2
 - 1
