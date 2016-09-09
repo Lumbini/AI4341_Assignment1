@@ -6,7 +6,7 @@ import Queue
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test7IDS.txt'
+    fileName = 'test8.txt'
 print 'Opening ', fileName
 config = open(fileName, 'r', 0)
 info = config.readlines()
@@ -32,10 +32,11 @@ maxSearchDepth = 0
 
 #######################################################################################################################################
 class NodeOp:
-    def __init__(self, node, completedOperation, parentNodeOp):
+    def __init__(self, node, completedOperation, parentNodeOp, depth):
         self.node = node
         self.op = completedOperation
         self.parent = parentNodeOp
+        self.depth = depth
 
 
 # Greedy Search Algorithm
@@ -47,6 +48,8 @@ class NodeOp:
 def greedySearch(start, goal, maxTime, operations):
     done = 0
     path = []
+    depth = 1
+    maxDepth = 1
 
     # begin timer for search
     startTime = time.time()
@@ -63,7 +66,7 @@ def greedySearch(start, goal, maxTime, operations):
         for next in operations:
             newValue = runOp(start, next.rstrip('\n'))
             priority = abs(newValue - goal)
-            newNodeOp = NodeOp(newValue, next.rstrip('\n'), start)  # first parent is integer
+            newNodeOp = NodeOp(newValue, next.rstrip('\n'), start, depth + 1)  # first parent is integer
             frontier.put((priority,newNodeOp))
 
         currentTime = time.time()
@@ -72,6 +75,9 @@ def greedySearch(start, goal, maxTime, operations):
 
         while (currentTime - startTime) < maxTime:
             current = frontier.get()[1]
+            if maxDepth < current.depth:
+                maxDepth = current.depth
+
             # print 'Node = ' + str(current.node) + ' Past operator was ' + str(current.op)
             nodesExplored += 1
 
@@ -84,7 +90,7 @@ def greedySearch(start, goal, maxTime, operations):
             for next in operations:
                 newValue = runOp(current.node, next.rstrip('\n'))
                 priority = abs(newValue - goal)
-                newNodeOp = NodeOp(newValue, next.rstrip('\n'), current)  # all other parents are NodeOps
+                newNodeOp = NodeOp(newValue, next.rstrip('\n'), current, current.depth + 1)  # all other parents are NodeOps
                 frontier.put((priority,newNodeOp))
 
             currentTime = time.time()
@@ -106,8 +112,9 @@ def greedySearch(start, goal, maxTime, operations):
 
     # final printing
     print 'Steps Taken: ' + str(len(path))
-    print 'Search took ' + str(currentTime - startTime) + ' seconds'
+    print 'Max Depth: ' + str(maxDepth)
     print 'Explored ' + str(nodesExplored) + ' nodes'
+    print 'Search took ' + str(currentTime - startTime) + ' seconds'
 
 
 def printPath(start, path):
