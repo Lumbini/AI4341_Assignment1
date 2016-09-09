@@ -30,7 +30,7 @@ searchMode = info[0]
 startVal = int(info[1])
 goalVal = int(info[2])
 timeAlloc = float(info[3])
-legalOps = info[4:]
+legalOps = info[4:-1]
 depth = 0
 print 'Search Mode:', searchMode
 print 'Starting Value: ', startVal
@@ -70,7 +70,7 @@ def IDDFS(start, goal, timeLimit, opList):
         
     startTime = time.time()
 
-    depth = 1
+    depth = 0
     #number of nodes 
     nodesExpanded = 0
 
@@ -85,8 +85,6 @@ def IDDFS(start, goal, timeLimit, opList):
     while (currentTime-startTime) < timeLimit:
         
         graphSearch = combinations_with_replacement(range(len(legalOps)), depth)
-        # for x in graphSearch:
-        #     print x
 
         # Restart Path
         path = []
@@ -116,7 +114,7 @@ def IDDFS(start, goal, timeLimit, opList):
                 if check == goal:
                     success = 1
                     timeTaken = currentTime - startTime
-                
+                    
                     print 'Iterative Deepening Search completed in ' + str(timeTaken)
                     print 'Depth: ' + str(depth)
                     print 'Nodes Expanded: ' + str(nodesExpanded)
@@ -132,6 +130,8 @@ def IDDFS(start, goal, timeLimit, opList):
         if depth >= 500 or (currentTime - startTime) > timeAlloc:
             print 'Could not reach goal in given time or depth limit reached'
             print 'Depth: ' + str(depth)
+            print 'Nodes Expanded: ' + str(nodesExpanded)
+            print 'Time Taken: ' + str(currentTime-startTime)
             break
         
 def compute(currNode, nextNode, depth, nodesExpanded):
@@ -152,7 +152,7 @@ def compute(currNode, nextNode, depth, nodesExpanded):
     
     if opSet[0] == '^':
         try:
-            result = long(math.pow(long(number), int(opSet[1])))
+            result = long(number * 2)
             return result
             
         except OverflowError:
