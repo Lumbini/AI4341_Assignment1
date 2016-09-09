@@ -2,7 +2,6 @@ import time
 import sys
 import Queue
 
-
 # Read from file
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
@@ -31,20 +30,7 @@ numStepsRequired = 0
 nodesExpanded = 0
 maxSearchDepth = 0
 
-# # Iterative Deepening Search
-# iterativeStart = time.time()
-# # ALGORITHM GOES HERE
-# iterativeEnd = time.time()
-# iterativeTime = iterativeEnd - iterativeStart
-# print "Iterative Deepening Search Took", iterativeTime, 'seconds'
-#
-# # Greedy Algorithm Search
-# greedyStart = time.time()
-# # ALGORITHM GOES HERE
-# greedyEnd = time.time()
-# greedyTime = greedyEnd - greedyStart
-# print "Greedy Search Took", greedyTime, 'seconds'
-
+#######################################################################################################################################
 class NodeOp:
     def __init__(self, node, completedOperation, parentNodeOp):
         self.node = node
@@ -154,10 +140,141 @@ def runOp(value, operation):
     else:  # will cause error if invalid operation
         return
 
+######################################################################################################################################################
 
+def combinations_with_replacement(iterable, r):
+    # combinations('ABC', 2) --> AA AB AC BB BC CC
+    pool = tuple(iterable)
+    n = len(pool)
+    if not n and r:
+        return
+    indices = [0] * r
+    yield tuple(pool[i] for i in indices)
+    while True:
+        for i in reversed(range(r)):
+            if indices[i] != n - 1:
+                break
+        else:
+            return
+        indices[i:] = [indices[i] + 1] * (r - i)
+        yield tuple(pool[i] for i in indices)
+
+def IDDFS(start, goal, timeLimit, opList):
+    # Start Timer
+    graphList = []
+
+    for operations in opList:
+        graphList.append(operations.rstrip('\n'))
+        
+    startTime = time.time()
+
+    depth = 0
+    #number of nodes 
+    nodesExpanded = 0
+
+    # Boolean to check if goal has been reached
+    success = 0
+
+    # Store the Path array
+    path = []
+
+    currentTime = time.time()
+    # Run while loop till goal found,
+    while (currentTime-startTime) < timeLimit:
+        
+        graphSearch = combinations_with_replacement(range(len(legalOps)), depth)
+
+        # Restart Path
+        path = []
+        # Start searching from start Node
+        currNode = start;
+
+        # check if the node is the goal
+        if currNode == goal:
+            success = 1
+            print 'Start = Goal. Haha That was easy.'
+        
+
+        #Iterate  through the list of list of combinations
+        for combinations in graphSearch:
+            if (currentTime - startTime) > timeAlloc:
+                break
+            currentTime = time.time()
+            #Go through the list of Combination
+            for nodes in combinations:
+                
+                check = compute(currNode, graphList[nodes], depth, nodesExpanded)
+                if check is None or (currentTime - startTime) > timeAlloc:
+                    break
+                nodesExpanded += 1
+                
+                eqn = [str(currNode) + ' '+ str(graphList[nodes] + ' = ' + str(check))]
+                path.extend(eqn)
+                if check == goal:
+                    success = 1
+                    timeTaken = currentTime - startTime
+                    
+                    print 'Iterative Deepening Search completed in ' + str(timeTaken)
+                    print 'Depth: ' + str(depth)
+                    print 'Nodes Expanded: ' + str(nodesExpanded)
+                    print 'Number of equations to reach goal: ' + str(len(path))
+                    print 'The equations required to reach goal are: ' 
+                    return path
+                    break
+                currNode = check
+        
+            
+        depth += 1
+        currentTime = time.time()
+        if depth >= 50 or (currentTime - startTime) > timeAlloc:
+            print 'Could not reach goal in given time or depth limit reached'
+            print 'Depth: ' + str(depth)
+            print 'Nodes Expanded: ' + str(nodesExpanded)
+            print 'Time Taken: ' + str(currentTime-startTime)
+            break
+        
+def compute(currNode, nextNode, depth, nodesExpanded):
+    #create an array of chars
+    opSet = nextNode.split(' ')
+    # print opSet
+    
+    if isinstance(currNode, str):
+        currSet = currNode.split(' ')
+        number = long(currSet[1])
+    else:
+        number = long(currNode)
+        
+
+    #if operator is power use the math.pow library
+    # print str(number) + ' ' +  str(opSet[1])
+    # print number
+    
+    if opSet[0] == '^':
+        try:
+            result = long(number * 2)
+            return result
+            
+        except OverflowError:
+            print 'Memory limit reached,  Trying next possible operation'
+            print 'Nodes Expanded: ' + str(nodesExpanded)
+            print 'Depth: ' + str(depth)
+            pass
+
+    #For +, -, *, / use the eval() function
+    else:
+        number = str(currNode) + nextNode
+        try:
+            return eval(number)
+        except TypeError:
+            print 'Iterative Deepening Search terminated due to Memory Limitations'
+            sys.exit(0)
+#MAIN
+######################################################################################################################################################
 if __name__ == '__main__':
     # val = runOp(8,'/ 3')
     # print val
     if searchMode.rstrip('\n') == 'greedy':
         greedySearch(startVal, goalVal, float(timeAlloc), legalOps)
+    elif searchMode.rstrip('\n') == 'iterative':
+        print IDDFS(startVal, goalVal, float(timeAlloc), legalOps)
 
