@@ -6,7 +6,7 @@ import Queue
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test7.txt'
+    fileName = 'test7IDS.txt'
 print 'Opening ', fileName
 config = open(fileName, 'r', 0)
 info = config.readlines()
@@ -46,6 +46,7 @@ class NodeOp:
 #	operations contains strings of each operation
 def greedySearch(start, goal, maxTime, operations):
     done = 0
+    path = []
 
     # begin timer for search
     startTime = time.time()
@@ -89,7 +90,6 @@ def greedySearch(start, goal, maxTime, operations):
             currentTime = time.time()
 
         # add parent nodes to path
-        path = []
         while True:
             path.append(current)
             if isinstance(current.parent, NodeOp):  # type check. Not sure if this works
