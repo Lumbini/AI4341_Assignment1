@@ -1,6 +1,7 @@
 import time
 import sys
 import Queue
+import random
 
 # Read from file
 if len(sys.argv) > 1:
@@ -29,6 +30,32 @@ isError = False
 numStepsRequired = 0
 nodesExpanded = 0
 maxSearchDepth = 0
+
+#######################################################################################################################################
+
+def geneticFitness(member, goal, fitAllowance):
+    print 'Evaluating fitness of ', member
+    # calculate value obtained by doing operations indicated by member on the start value (operationVal)
+    # return true if abs(operationVal - goal) < fitAllowance
+
+def crossover(memberOne, memberTwo):
+    print 'Crossover'
+
+def mutate(member):
+    print 'Mutating'
+
+def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, crossPos, mutationProb):
+    print 'running genetic search'
+
+    # generate list of random integers between 0 inclusive and the length of the list of operations non-inclusive
+    # run fitness function on each member of population
+        # if true, store population member for crossover with the next member to return true from the fitness function
+        # if false, delete population member and generate a new one
+        # if a population member is stored for crossover but a second is not found in the search round, keep in storage for priority in the next round
+    # use crossover() to combine parts of each member. lists don't have to be of the same length before / after.
+        # function variable crossPos doesn't have to be a specific variable, can be set to be a random number. 
+    # use mutate() to make small random changes to an individual member's operation values
+        # only happens at the frequency indicated by function variable mutationProb
 
 #######################################################################################################################################
 class NodeOp:
@@ -277,4 +304,8 @@ if __name__ == '__main__':
         greedySearch(startVal, goalVal, float(timeAlloc), legalOps)
     elif searchMode.rstrip('\n') == 'iterative':
         print IDDFS(startVal, goalVal, float(timeAlloc), legalOps)
+    elif searchMode.rstrip('\n') == 'genetic':
+        geneticSearch(startVal, goalVal, float(timeAlloc), legalOps)
+    else:
+        geneticSearch(5, 6, 2.5, ['+ 1', '- 2', '* 3', '/ 4', '^ 5'], 10, 1, 1, 1)
 
