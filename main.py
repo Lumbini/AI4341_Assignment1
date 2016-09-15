@@ -33,16 +33,21 @@ maxSearchDepth = 0
 
 #######################################################################################################################################
 
-def geneticFitness(member, goal, fitAllowance):
+def geneticFitness(operations, member, start, goal, fitAllowance):
     print 'Evaluating fitness of ', member
-    if len(member) > 3:
-        return False
-    else:
-        return True
     # calculate value obtained by doing operations indicated by member on the start value (operationVal)
+    finalValue = start
+    for x in range(0, len(member)):
+        finalValue = runOp(start, operations[member[x]])
+
     # return true if abs(operationVal - goal) < fitAllowance
+    if abs(finalValue - goal) < fitAllowance:
+        return True
+    else:
+        return False
 
 def crossover(memberOne, memberTwo):
+    print 'Crossover'
     crossPos = len(memberTwo) / 2
     return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
@@ -66,7 +71,7 @@ def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, cross
     offset = 0
     for z in range(0, len(population)):
         # if true, store population member for crossover with the next member to return true from the fitness function
-        if geneticFitness(population[z - offset], goal, fitAllowance):
+        if geneticFitness(operations, population[z - offset], start, goal, fitAllowance):
             print 'Returned True'
             if memberForCrossover is None:
                 mfcIndex = z - offset
