@@ -33,19 +33,16 @@ maxSearchDepth = 0
 
 #######################################################################################################################################
 
-def geneticFitness(operations, member, start, goal, fitAllowance):
+def geneticFitness(operations, member, start, goal):
     print 'Evaluating fitness of ', member
     # calculate value obtained by doing operations indicated by member on the start value (operationVal)
     finalValue = start
     for x in range(0, len(member)):
         finalValue = runOp(finalValue, operations[member[x]])
         if finalValue == goal:
-            print 'FOUND TARGET'
+            return 0
     # return true if abs(operationVal - goal) < fitAllowance
-    if abs(finalValue - goal) < fitAllowance:
-        return True
-    else:
-        return False
+    return abs(finalValue - goal)
 
 def crossover(memberOne, memberTwo):
     print 'Crossover'
@@ -57,11 +54,10 @@ def mutate(member):
     member[random.randrange(0, len(member))] = random.randrange(0, len(member))
     return member
 
-def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, crossPos, mutationProb):
+def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance, crossPos, mutationProb):
     print 'running genetic search'
 
     # generate list of random integers between 0 inclusive and the length of the list of operations non-inclusive
-    population = []
     memberForCrossover = None
     mfcIndex = 0
     for y in range(0, 1):
@@ -74,7 +70,15 @@ def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, cross
     offset = 0
     for z in range(0, len(population)):
         # if true, store population member for crossover with the next member to return true from the fitness function
-        if geneticFitness(operations, population[z - offset], start, goal, fitAllowance):
+        val = geneticFitness(operations, population[z - offset], start, goal)
+        if val == 0:
+            for i in range(1, len(population[z - offset]) + 1):
+                if geneticFitness(operations, population[z - offset][0:i], start, goal) == 0:
+                    print 'SOLUTION: ', population[z - offset][0:i]
+                    return population[z - offset][0:i]
+            print 'SOLUTION: ', population[z - offset]
+            return population[z - offset]
+        elif val <= fitAllowance:
             print 'Returned True'
             if memberForCrossover is None:
                 mfcIndex = z - offset
@@ -99,6 +103,9 @@ def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, cross
             newMember = mutate(population[z - offset])
             population.append(newMember)
             offset += 1
+
+    # Recursively call function with updated population until solution is found
+    return geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance, crossPos, mutationProb)
 
 #######################################################################################################################################
 class NodeOp:
@@ -338,6 +345,12 @@ def compute(currNode, nextNode, depth, nodesExpanded):
         except TypeError:
             print 'Iterative Deepening Search terminated due to Memory Limitations'
             sys.exit(0)
+
+def printSolution(sol, start, operations):
+    currentVal = start
+    for x in range(0, len(sol)):
+        print currentVal, operations[sol[x]]
+        currentVal = runOp(currentVal, operations[sol[x]])
 #MAIN
 ######################################################################################################################################################
 if __name__ == '__main__':
@@ -348,7 +361,10 @@ if __name__ == '__main__':
     elif searchMode.rstrip('\n') == 'iterative':
         print IDDFS(startVal, goalVal, float(timeAlloc), legalOps)
     elif searchMode.rstrip('\n') == 'genetic':
-        geneticSearch(startVal, goalVal, float(timeAlloc), legalOps)
+        solution = geneticSearch(startVal, goalVal, float(timeAlloc), legalOps)
+        printSolution(solution, startVal, legalOps)
     else:
-        geneticSearch(5, 6, 2.5, ['+ 1', '- 2', '* 3', '/ 4', '^ 5'], 10, 1, 1, 1)
+        solution = geneticSearch([], 5, 6, 2.5, ['+ 5', '- 2', '* 3', '/ 2', '^ 5'], 10, 1, 1, 1)
+        printSolution(solution, 5, ['+ 5', '- 2', '* 3', '/ 2', '^ 5'])
+
 
