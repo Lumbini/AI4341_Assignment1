@@ -53,6 +53,8 @@ def crossover(memberOne, memberTwo):
 
 def mutate(member):
     print 'Mutating'
+    member[random.randrange(0, len(member))] = random.randrange(0, len(member))
+    return member
 
 def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, crossPos, mutationProb):
     print 'running genetic search'
@@ -91,7 +93,11 @@ def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, cross
              populationSection = random.sample(range(0, len(operations)), x)
              population.append(populationSection)
              print population
-
+        r = random.randrange(1, 11)
+        if r == 3:
+            newMember = mutate(population[z - offset])
+            population.append(newMember)
+            offset += 1
         # if a population member is stored for crossover but a second is not found in the search round, keep in storage for priority in the next round
         # function variable crossPos doesn't have to be a specific variable, can be set to be a random number.
     # use mutate() to make small random changes to an individual member's operation values
