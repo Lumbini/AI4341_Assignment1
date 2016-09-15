@@ -35,11 +35,16 @@ maxSearchDepth = 0
 
 def geneticFitness(member, goal, fitAllowance):
     print 'Evaluating fitness of ', member
+    if len(member) > 3:
+        return False
+    else:
+        return True
     # calculate value obtained by doing operations indicated by member on the start value (operationVal)
     # return true if abs(operationVal - goal) < fitAllowance
 
 def crossover(memberOne, memberTwo):
-    print 'Crossover'
+    crossPos = len(memberTwo) / 2
+    return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
 def mutate(member):
     print 'Mutating'
@@ -48,12 +53,42 @@ def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, cross
     print 'running genetic search'
 
     # generate list of random integers between 0 inclusive and the length of the list of operations non-inclusive
+    population = []
+    memberForCrossover = None
+    mfcIndex = 0
+    for y in range(0, 1):
+        for x in range(1, len(operations) + 1):
+            populationSection = random.sample(range(0, len(operations)), x)
+            population.append(populationSection)
+            print population
+
     # run fitness function on each member of population
+    offset = 0
+    for z in range(0, len(population)):
         # if true, store population member for crossover with the next member to return true from the fitness function
+        if geneticFitness(population[z - offset], goal, fitAllowance):
+            print 'Returned True'
+            if memberForCrossover is None:
+                mfcIndex = z - offset
+                memberForCrossover = population[z - offset]
+            else:
+                # use crossover() to combine parts of each member and insert this new member into the list
+                population.append(crossover(memberForCrossover, population[z - offset]))
+                del population[z]
+                del population[mfcIndex]
+                offset += 2
+                memberForCrossover = None
+                print population
         # if false, delete population member and generate a new one
+        else:
+             del population[z - offset]
+             offset += 1
+             populationSection = random.sample(range(0, len(operations)), x)
+             population.append(populationSection)
+             print population
+
         # if a population member is stored for crossover but a second is not found in the search round, keep in storage for priority in the next round
-    # use crossover() to combine parts of each member. lists don't have to be of the same length before / after.
-        # function variable crossPos doesn't have to be a specific variable, can be set to be a random number. 
+        # function variable crossPos doesn't have to be a specific variable, can be set to be a random number.
     # use mutate() to make small random changes to an individual member's operation values
         # only happens at the frequency indicated by function variable mutationProb
 
