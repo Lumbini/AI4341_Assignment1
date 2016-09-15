@@ -38,8 +38,9 @@ def geneticFitness(operations, member, start, goal, fitAllowance):
     # calculate value obtained by doing operations indicated by member on the start value (operationVal)
     finalValue = start
     for x in range(0, len(member)):
-        finalValue = runOp(start, operations[member[x]])
-
+        finalValue = runOp(finalValue, operations[member[x]])
+        if finalValue == goal:
+            print 'FOUND TARGET'
     # return true if abs(operationVal - goal) < fitAllowance
     if abs(finalValue - goal) < fitAllowance:
         return True
@@ -98,10 +99,6 @@ def geneticSearch(start, goal, maxTime, operations, popSize, fitAllowance, cross
             newMember = mutate(population[z - offset])
             population.append(newMember)
             offset += 1
-        # if a population member is stored for crossover but a second is not found in the search round, keep in storage for priority in the next round
-        # function variable crossPos doesn't have to be a specific variable, can be set to be a random number.
-    # use mutate() to make small random changes to an individual member's operation values
-        # only happens at the frequency indicated by function variable mutationProb
 
 #######################################################################################################################################
 class NodeOp:
