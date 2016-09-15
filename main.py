@@ -1,12 +1,13 @@
 import time
 import sys
 import Queue
+import random
 
 # Read from file
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test7IDS.txt'
+    fileName = 'test.txt'
 print 'Opening ', fileName
 config = open(fileName, 'r', 0)
 info = config.readlines()
@@ -30,7 +31,53 @@ numStepsRequired = 0
 nodesExpanded = 0
 maxSearchDepth = 0
 
-#######################################################################################################################################
+########################################################################################################################
+
+
+def calculate_fitness(operations, member, start, goal):
+    tmp_val = start
+    for x in range(0, len(member)):
+        tmp_val = runOp(tmp_val, operations[member[x]])
+    return abs(tmp_val - goal)
+
+
+def genetic_search(start_value, target_value, time_limit, operations):
+    population = Queue.PriorityQueue()
+
+    for i in range(0, 10):
+        organism = []
+        num_of_operations = random.randrange(5, 25)
+        val = start_value
+        for j in range(0, num_of_operations):
+            if random.randint(0, 4):
+                #  use greedy
+                present_best = sys.maxint
+                operator_to_add = -1
+                for k in range(0, len(legalOps)):
+                    tmp_val = runOp(val, operations[k])
+                    if operator_to_add < 0 or abs(tmp_val - target_value) < abs(present_best - target_value):
+                        present_best = tmp_val
+                        operator_to_add = operations[k]
+            else:
+                operator_to_add = operations[random.randint(0, len(operations)-1)]
+            organism.append(operator_to_add)
+            val = runOp(val, operator_to_add)
+        population.put((abs(val - target_value), organism))
+        organism = []
+    flag = True
+
+    org1 = population.get()
+    org2 = population.get()
+    cross_position = len(org2[1]) / 2
+    org3 = org1[0:cross_position] + org2[cross_position:len(org2[1])]
+    print org1
+    print org2
+    print org3
+
+
+#######################################################################################################################
+
+
 class NodeOp:
     def __init__(self, node, completedOperation, parentNodeOp):
         self.node = node
@@ -277,4 +324,8 @@ if __name__ == '__main__':
         greedySearch(startVal, goalVal, float(timeAlloc), legalOps)
     elif searchMode.rstrip('\n') == 'iterative':
         print IDDFS(startVal, goalVal, float(timeAlloc), legalOps)
-
+    elif searchMode.rstrip('\n') == 'genetic':
+        #geneticSearch(startVal, goalVal, float(timeAlloc), legalOps, 0, 2, 0, 0)
+        genetic_search(startVal, goalVal, float(timeAlloc), legalOps)
+    else:
+        geneticSearch(5, 6, 2.5, ['+ 1', '- 2', '* 3', '/ 4', '^ 5'], 10, 1, 1, 1)
