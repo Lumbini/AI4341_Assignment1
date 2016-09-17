@@ -129,7 +129,7 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
                  newSize = 1000
              elif geneticGenerations > 2:
                  newSize = 100
-             for i in range(newSize):
+             for i in range(random.randrange(1, newSize, 1)):
                  populationSection.append(random.randrange(0, len(operations) - 1, 1))
              # populationSection = random.sample(range(0, len(operations)), random.randrange(1, len(operations), 1))
              population.append(populationSection)
