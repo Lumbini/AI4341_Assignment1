@@ -2,6 +2,7 @@ import time
 import sys
 import Queue
 import random
+from decimal import *
 
 # Read from file
 if len(sys.argv) > 1:
@@ -39,6 +40,10 @@ def geneticFitness(operations, member, start, goal):
     # calculate value obtained by doing operations indicated by member on the start value (operationVal)
     finalValue = start
     for x in range(0, len(member)):
+        # print 'Val: ', finalValue
+        # print 'X: ', x
+        # print 'Member Len: ', len(member)
+        # print 'Member: ', member
         finalValue = runOp(finalValue, operations[member[x]])
         if finalValue == goal:
             return 0
@@ -50,9 +55,9 @@ def crossover(memberOne, memberTwo):
     crossPos = len(memberTwo) / 2
     return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
-def mutate(member):
+def mutate(member, operations):
     # print 'Mutating'
-    member[random.randrange(0, len(member))] = random.randrange(0, len(member))
+    member[random.randrange(0, len(member))] = random.randrange(0, len(operations))
     return member
 
 def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance):
@@ -97,12 +102,23 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
         else:
              del population[z - offset]
              offset += 1
-             populationSection = random.sample(range(0, len(operations)), x)
+             populationSection = []
+             # TO CHANGE size of organisms added after culling, change value of range below
+             newSize = 10
+             if geneticGenerations > 10:
+                 newSize = 10000
+             elif geneticGenerations > 5:
+                 newSize = 1000
+             elif geneticGenerations > 2:
+                 newSize = 100
+             for i in range(newSize):
+                 populationSection.append(random.randrange(0, len(operations) - 1, 1))
+             # populationSection = random.sample(range(0, len(operations)), random.randrange(1, len(operations), 1))
              population.append(populationSection)
              # print population
         r = random.randrange(1, 11)
         if r == 3:
-            newMember = mutate(population[z - offset])
+            newMember = mutate(population[z - offset], operations)
             population.append(newMember)
             offset += 1
 
@@ -198,7 +214,7 @@ def printPath(start, path):
 
 
 def runOp(value, operation):
-    altValue = int(operation[1:])
+    altValue = float(operation[1:])
     op = operation[0]
 
     if op == '+':
@@ -214,8 +230,15 @@ def runOp(value, operation):
         newValue = value * altValue
         return newValue
     elif op == '^':
-        newValue = value ** altValue
-        return newValue
+        if value >= 0:
+            try:
+                newValue = value ** altValue
+                return newValue
+            except:
+                pass
+                return 0
+        else:
+            return 0
     else:  # will cause error if invalid operation
         return
 
