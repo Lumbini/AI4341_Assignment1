@@ -394,6 +394,7 @@ def printSolution(sol, start, operations):
     for x in range(0, len(sol)):
         print currentVal, operations[sol[x]], '=', runOp(currentVal, operations[sol[x]])
         currentVal = runOp(currentVal, operations[sol[x]])
+    return currentVal
 #MAIN
 ######################################################################################################################################################
 if __name__ == '__main__':
@@ -409,8 +410,8 @@ if __name__ == '__main__':
         startTime = time.time()
         solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance, startTime, [], -1)
         searchTime = time.time() - startTime
-        printSolution(solution, startVal, legalOps)
-        print 'Error: 0'
+        finalVal = printSolution(solution, startVal, legalOps)
+        print 'Error: ', abs(finalVal - goalVal)
         print 'Size of Organism: ', len(solution)
         print 'Search Required: ', searchTime, 'seconds'
         print 'Population Size: ', populationSize * len(legalOps) * geneticGenerations
