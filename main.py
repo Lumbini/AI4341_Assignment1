@@ -51,7 +51,10 @@ def geneticFitness(operations, member, start, goal):
 
 def crossover(memberOne, memberTwo):
     # print 'Crossover'
-    crossPos = len(memberTwo) / 2
+    if len(memberTwo) < len(memberOne):
+        crossPos = len(memberTwo) / 2
+    else:
+        crossPos = len(memberOne) / 2
     return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
 def mutate(member, operations):
