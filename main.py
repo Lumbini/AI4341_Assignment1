@@ -2,7 +2,6 @@ import time
 import sys
 import Queue
 import random
-from decimal import *
 
 # Read from file
 if len(sys.argv) > 1:
