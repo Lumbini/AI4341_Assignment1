@@ -69,8 +69,11 @@ def mutate(member, operations):
         member.append(random.randrange(0, len(operations)))
     return member
 
-def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance):
+def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance, startTime, bestSoFar, bestDif):
     # print 'running genetic search'
+    currentTime = time.time()
+    if currentTime - startTime >= maxTime:
+        return bestSoFar
     global geneticGenerations
     geneticGenerations += 1
     # generate list of random integers between 0 inclusive and the length of the list of operations non-inclusive
@@ -85,8 +88,14 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
     # run fitness function on each member of population
     offset = 0
     for z in range(0, len(population)):
+        currentTime = time.time()
+        if currentTime - startTime >= maxTime:
+            return bestSoFar
         # if true, store population member for crossover with the next member to return true from the fitness function
         val = geneticFitness(operations, population[z - offset], start, goal)
+        if bestDif == -1 or val < bestDif:
+            bestSoFar = population[z - offset]
+            bestDif = val
         if val == 0:
             for i in range(1, len(population[z - offset]) + 1):
                 if geneticFitness(operations, population[z - offset][0:i], start, goal) == 0:
@@ -132,7 +141,7 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
             offset += 1
 
     # Recursively call function with updated population until solution is found
-    return geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance)
+    return geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance, startTime, bestSoFar, bestDif)
 
 #######################################################################################################################################
 class NodeOp:
@@ -398,12 +407,12 @@ if __name__ == '__main__':
         populationSize = 10
         fitAllowance = 10
         startTime = time.time()
-        solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance)
+        solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance, startTime, [], -1)
         searchTime = time.time() - startTime
         printSolution(solution, startVal, legalOps)
         print 'Error: 0'
         print 'Size of Organism: ', len(solution)
         print 'Search Required: ', searchTime, 'seconds'
-        print 'Population Size: ', populationSize * len(legalOps)
+        print 'Population Size: ', populationSize * len(legalOps) * geneticGenerations
         print 'Number of Generations: ', geneticGenerations
 
