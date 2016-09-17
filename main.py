@@ -56,7 +56,14 @@ def crossover(memberOne, memberTwo):
 
 def mutate(member, operations):
     # print 'Mutating'
-    member[random.randrange(0, len(member))] = random.randrange(0, len(operations))
+    indexToMutate = random.randrange(0, len(member))
+    mutationType = random.randrange(0, 3)
+    if mutationType == 0:
+        member[indexToMutate] = random.randrange(0, len(operations))
+    elif mutationType == 1:
+        del member[indexToMutate]
+    elif mutationType == 2:
+        member.append(random.randrange(0, len(operations)))
     return member
 
 def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance):
