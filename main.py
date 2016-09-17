@@ -59,11 +59,12 @@ def crossover(memberOne, memberTwo):
 
 def mutate(member, operations):
     # print 'Mutating'
-    indexToMutate = random.randrange(0, len(member))
+    print 'Len: ', len(member)
+    indexToMutate = random.randrange(0, len(member), 1)
     mutationType = random.randrange(0, 3)
     if mutationType == 0:
         member[indexToMutate] = random.randrange(0, len(operations))
-    elif mutationType == 1:
+    elif mutationType == 1 and len(member) > 1:
         del member[indexToMutate]
     elif mutationType == 2:
         member.append(random.randrange(0, len(operations)))
