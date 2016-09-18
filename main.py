@@ -40,6 +40,10 @@ def geneticFitness(operations, member, start, goal):
     # calculate value obtained by doing operations indicated by member on the start value (operationVal)
     finalValue = start
     for x in range(0, len(member)):
+        # print 'Val: ', finalValue
+        # print 'X: ', x
+        # print 'Member Len: ', len(member)
+        # print 'Member: ', member
         finalValue = runOp(finalValue, operations[member[x]])
         if finalValue == goal:
             return 0
@@ -48,16 +52,29 @@ def geneticFitness(operations, member, start, goal):
 
 def crossover(memberOne, memberTwo):
     # print 'Crossover'
-    crossPos = len(memberTwo) / 2
+    if len(memberTwo) < len(memberOne):
+        crossPos = len(memberTwo) / 2
+    else:
+        crossPos = len(memberOne) / 2
     return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
-def mutate(member):
+def mutate(member, operations):
     # print 'Mutating'
-    member[random.randrange(0, len(member))] = random.randrange(0, len(member))
+    indexToMutate = random.randrange(0, len(member), 1)
+    mutationType = random.randrange(0, 3)
+    if mutationType == 0:
+        member[indexToMutate] = random.randrange(0, len(operations))
+    elif mutationType == 1 and len(member) > 1:
+        del member[indexToMutate]
+    elif mutationType == 2:
+        member.append(random.randrange(0, len(operations)))
     return member
 
-def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance):
+def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance, startTime, bestSoFar, bestDif):
     # print 'running genetic search'
+    currentTime = time.time()
+    if currentTime - startTime >= maxTime:
+        return bestSoFar
     global geneticGenerations
     geneticGenerations += 1
     # generate list of random integers between 0 inclusive and the length of the list of operations non-inclusive
@@ -72,8 +89,14 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
     # run fitness function on each member of population
     offset = 0
     for z in range(0, len(population)):
+        currentTime = time.time()
+        if currentTime - startTime >= maxTime:
+            return bestSoFar
         # if true, store population member for crossover with the next member to return true from the fitness function
         val = geneticFitness(operations, population[z - offset], start, goal)
+        if bestDif == -1 or val < bestDif:
+            bestSoFar = population[z - offset]
+            bestDif = val
         if val == 0:
             for i in range(1, len(population[z - offset]) + 1):
                 if geneticFitness(operations, population[z - offset][0:i], start, goal) == 0:
@@ -98,17 +121,28 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
         else:
              del population[z - offset]
              offset += 1
-             populationSection = random.sample(range(0, len(operations)), x)
+             populationSection = []
+             # TO CHANGE size of organisms added after culling, change value of range below
+             newSize = 10
+             if geneticGenerations > 10:
+                 newSize = 10000
+             elif geneticGenerations > 5:
+                 newSize = 1000
+             elif geneticGenerations > 2:
+                 newSize = 100
+             for i in range(newSize):
+                 populationSection.append(random.randrange(0, len(operations) - 1, 1))
+             # populationSection = random.sample(range(0, len(operations)), random.randrange(1, len(operations), 1))
              population.append(populationSection)
              # print population
         r = random.randrange(1, 11)
         if r == 3:
-            newMember = mutate(population[z - offset])
+            newMember = mutate(population[z - offset], operations)
             population.append(newMember)
             offset += 1
 
     # Recursively call function with updated population until solution is found
-    return geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance)
+    return geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllowance, startTime, bestSoFar, bestDif)
 
 #######################################################################################################################################
 class NodeOp:
@@ -206,7 +240,7 @@ def printPath(start, path):
 
 
 def runOp(value, operation):
-    altValue = int(operation[1:])
+    altValue = float(operation[1:])
     op = operation[0]
 
     if op == '+':
@@ -222,8 +256,15 @@ def runOp(value, operation):
         newValue = value * altValue
         return newValue
     elif op == '^':
-        newValue = value ** altValue
-        return newValue
+        if value >= 0:
+            try:
+                newValue = value ** altValue
+                return newValue
+            except:
+                pass
+                return 0
+        else:
+            return 0
     else:  # will cause error if invalid operation
         return
 
@@ -361,6 +402,7 @@ def printSolution(sol, start, operations):
     for x in range(0, len(sol)):
         print currentVal, operations[sol[x]], '=', runOp(currentVal, operations[sol[x]])
         currentVal = runOp(currentVal, operations[sol[x]])
+    return currentVal
 #MAIN
 ######################################################################################################################################################
 if __name__ == '__main__':
@@ -374,12 +416,12 @@ if __name__ == '__main__':
         populationSize = 10
         fitAllowance = 10
         startTime = time.time()
-        solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance)
+        solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance, startTime, [], -1)
         searchTime = time.time() - startTime
-        printSolution(solution, startVal, legalOps)
-        print 'Error: 0'
+        finalVal = printSolution(solution, startVal, legalOps)
+        print 'Error: ', abs(finalVal - goalVal)
         print 'Size of Organism: ', len(solution)
         print 'Search Required: ', searchTime, 'seconds'
-        print 'Population Size: ', populationSize * len(legalOps)
+        print 'Population Size: ', populationSize * len(legalOps) * geneticGenerations
         print 'Number of Generations: ', geneticGenerations
 
