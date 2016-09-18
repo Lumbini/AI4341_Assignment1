@@ -7,7 +7,7 @@ import random
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test8.txt'
+    fileName = 'test7.txt'
 print 'Opening ', fileName
 
 config = open(fileName, 'r', 0)
