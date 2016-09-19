@@ -53,9 +53,10 @@ def crossover(memberOne, memberTwo):
     # print 'Crossover'
     if len(memberTwo) < len(memberOne):
         crossPos = len(memberTwo) / 2
+        return memberTwo[0:crossPos] + memberOne[crossPos:len(memberOne)]
     else:
         crossPos = len(memberOne) / 2
-    return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
+        return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
 def mutate(member, operations):
     # print 'Mutating'
