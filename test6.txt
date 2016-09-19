@@ -1,4 +1,4 @@
-greedy
+genetic
 2
 100
 2.5
