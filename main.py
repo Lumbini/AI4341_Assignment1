@@ -7,7 +7,7 @@ import random
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test7.txt'
+    fileName = 'test6GA.txt'
 print 'Opening ', fileName
 
 config = open(fileName, 'r', 0)
@@ -400,7 +400,7 @@ def compute(currNode, nextNode, depth, nodesExpanded):
 def printSolution(sol, start, operations):
     currentVal = start
     for x in range(0, len(sol)):
-        print currentVal, operations[sol[x]], '=', runOp(currentVal, operations[sol[x]])
+        print currentVal, operations[sol[x]].rstrip('\n'), '=', runOp(currentVal, operations[sol[x]])
         currentVal = runOp(currentVal, operations[sol[x]])
     return currentVal
 #MAIN
@@ -413,7 +413,7 @@ if __name__ == '__main__':
     elif searchMode.rstrip('\n') == 'iterative':
         print IDDFS(startVal, goalVal, float(timeAlloc), legalOps)
     elif searchMode.rstrip('\n') == 'genetic':
-        populationSize = 10
+        populationSize = 1000
         fitAllowance = 10
         startTime = time.time()
         solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance, startTime, [], -1)
