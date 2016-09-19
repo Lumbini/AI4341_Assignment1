@@ -54,9 +54,10 @@ def crossover(memberOne, memberTwo):
     # print 'Crossover'
     if len(memberTwo) < len(memberOne):
         crossPos = len(memberTwo) / 2
+        return memberTwo[0:crossPos] + memberOne[crossPos:len(memberOne)]
     else:
         crossPos = len(memberOne) / 2
-    return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
+        return memberOne[0:crossPos] + memberTwo[crossPos:len(memberTwo)]
 
 def mutate(member, operations):
     # print 'Mutating'
@@ -130,7 +131,7 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
                  newSize = 1000
              elif geneticGenerations > 2:
                  newSize = 100
-             for i in range(newSize):
+             for i in range(random.randrange(1, newSize, 1)):
                  populationSection.append(random.randrange(0, len(operations) - 1, 1))
              # populationSection = random.sample(range(0, len(operations)), random.randrange(1, len(operations), 1))
              population.append(populationSection)
