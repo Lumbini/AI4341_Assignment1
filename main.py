@@ -7,7 +7,7 @@ import random
 if len(sys.argv) > 1:
     fileName = str(sys.argv[1])
 else:
-    fileName = 'test6GA.txt'
+    fileName = 'test7GA.txt'
 print 'Opening ', fileName
 
 config = open(fileName, 'r', 0)
@@ -413,7 +413,7 @@ if __name__ == '__main__':
     elif searchMode.rstrip('\n') == 'iterative':
         print IDDFS(startVal, goalVal, float(timeAlloc), legalOps)
     elif searchMode.rstrip('\n') == 'genetic':
-        populationSize = 1000
+        populationSize = 100
         fitAllowance = 10
         startTime = time.time()
         solution = geneticSearch([], startVal, goalVal, float(timeAlloc), legalOps, populationSize, fitAllowance, startTime, [], -1)
