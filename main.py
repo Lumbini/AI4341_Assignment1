@@ -67,7 +67,7 @@ def mutate(member, operations):
         member[indexToMutate] = random.randrange(0, len(operations))
     elif mutationType == 1 and len(member) > 1:
         del member[indexToMutate]
-    elif mutationType == 2 or mutation == 3:
+    elif mutationType == 2 or mutationType == 3:
         member.append(random.randrange(0, len(operations)))
     return member
 
@@ -136,8 +136,8 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
              # populationSection = random.sample(range(0, len(operations)), random.randrange(1, len(operations), 1))
              population.append(populationSection)
              # print population
-        r = random.randrange(0, 11)
-        if r == 3:
+        r = random.randrange(0, 5)
+        if r == 0 or r == 1 or r == 2:
             newMember = mutate(population[z - offset], operations)
             population.append(newMember)
             offset += 1
