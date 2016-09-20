@@ -83,7 +83,7 @@ def geneticSearch(population, start, goal, maxTime, operations, popSize, fitAllo
     mfcIndex = 0
     for y in range(0, popSize):
         for x in range(1, len(operations) + 1):
-            populationSection = random.sample(range(0, len(operations)), x)
+            populationSection = random.sample(range(0, len(operations)), len(operations))
             population.append(populationSection)
             # print population
 
